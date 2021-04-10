@@ -1,15 +1,19 @@
 import { IsEmailProtocol } from './IsEmailProtocol'
 
-type UserParams = {
+export type UserParams = {
   name: string,
   email: string,
   password: string,
   passwordConfirmation: string,
 }
 
-type UserValid = Readonly<UserParams>
+export type UserValid = Readonly<Omit<UserParams, 'passwordConfirmation'>>
 
-export class UserModel {
+export interface CreateUserValidProtocol {
+  create(user: UserParams): UserValid
+}
+
+export class UserModel implements CreateUserValidProtocol {
   constructor (
     private readonly isEmail: IsEmailProtocol
   ) { }
@@ -39,6 +43,7 @@ export class UserModel {
     if (params.password !== params.passwordConfirmation) {
       throw new Error('A confirmação de senha está diferente da senha.')
     }
-    return params
+    const { passwordConfirmation, ...userLessPasswordConfirmation } = params
+    return userLessPasswordConfirmation
   }
 }
