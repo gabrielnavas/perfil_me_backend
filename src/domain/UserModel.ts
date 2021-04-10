@@ -7,14 +7,14 @@ type UserParams = {
   passwordConfirmation: string,
 }
 
-type Result = UserParams
+type UserValid = Readonly<UserParams>
 
 export class UserModel {
   constructor (
     private readonly isEmail: IsEmailProtocol
   ) { }
 
-  create = (params: UserParams): Result => {
+  create = (params: UserParams): UserValid => {
     if (params.name.length <= 1) {
       throw new Error('O nome deve ser maior que 1 caracteres.')
     }
