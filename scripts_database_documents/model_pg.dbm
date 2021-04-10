@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.3-beta1" use-changelog="false" last-position="0,0" last-zoom="1" max-obj-count="4"
+	 default-schema="public" default-owner="postgres">
+<database name="perfilme" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="user" layer="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="31" y="217"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="80"/>
+	</column>
+	<column name="description" not-null="true">
+		<type name="varchar" length="255"/>
+	</column>
+	<column name="photo_path">
+		<type name="varchar" length="500"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<constraint name="user_pk" type="pk-constr" table="public.&quot;user&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="links" layer="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="324" y="231"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="custom_name" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<constraint name="links_pk" type="pk-constr" table="public.links">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="code_type_link" index="2"/>
+		<object name="id_user" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="type_link_fk" index="1"/>
+		<object name="user_fk" index="2"/>
+	</customidxs>
+</table>
+
+<table name="type_link" layer="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="339" y="29"/>
+	<column name="code" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<column name="link" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<constraint name="type_link_pk" type="pk-constr" table="public.type_link">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="type_link_has_many_links" type="rel1n" layer="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 src-table="public.type_link"
+	 dst-table="public.links"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="user_has_many_links" type="rel1n" layer="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 src-table="public.&quot;user&quot;"
+	 dst-table="public.links"
+	 src-required="true" dst-required="false"/>
+
+</dbmodel>
