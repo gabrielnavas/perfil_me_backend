@@ -7,14 +7,16 @@
 -- Database creation must be performed outside a multi lined SQL file. 
 -- These commands were put in this file only as a convenience.
 -- 
--- object: perfilme | type: DATABASE --
--- DROP DATABASE IF EXISTS perfilme;
+-- object: postgres | type: DATABASE --
+-- DROP DATABASE IF EXISTS postgres;
 CREATE DATABASE postgres
 	ENCODING = 'UTF8'
 	LC_COLLATE = 'en_US.utf8'
 	LC_CTYPE = 'en_US.utf8'
 	TABLESPACE = pg_default
 	OWNER = postgres;
+-- ddl-end --
+COMMENT ON DATABASE postgres IS E'default administrative connection database';
 -- ddl-end --
 
 
@@ -48,10 +50,10 @@ ALTER SEQUENCE public.user_id_seq OWNER TO postgres;
 CREATE TABLE perfilme."user" (
 	id integer NOT NULL DEFAULT nextval('public.user_id_seq'::regclass),
 	name character varying(80) NOT NULL,
-	email character varying(80) NOT NULL,
 	description character varying(255),
 	photo_path character varying(500),
 	password character varying(100) NOT NULL,
+	email character varying(80) NOT NULL,
 	CONSTRAINT user_pk PRIMARY KEY (id)
 
 );
@@ -114,6 +116,26 @@ CREATE TABLE perfilme.type_link (
 );
 -- ddl-end --
 ALTER TABLE perfilme.type_link OWNER TO postgres;
+-- ddl-end --
+
+-- object: perfilme.authentication_token | type: TABLE --
+-- DROP TABLE IF EXISTS perfilme.authentication_token CASCADE;
+CREATE TABLE perfilme.authentication_token (
+	id serial NOT NULL,
+	token varchar NOT NULL,
+	id_user integer NOT NULL,
+	CONSTRAINT authentication_token_pk PRIMARY KEY (id)
+
+);
+-- ddl-end --
+ALTER TABLE perfilme.authentication_token OWNER TO postgres;
+-- ddl-end --
+
+-- object: user_fk | type: CONSTRAINT --
+-- ALTER TABLE perfilme.authentication_token DROP CONSTRAINT IF EXISTS user_fk CASCADE;
+ALTER TABLE perfilme.authentication_token ADD CONSTRAINT user_fk FOREIGN KEY (id_user)
+REFERENCES perfilme."user" (id) MATCH FULL
+ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: type_link_fk | type: CONSTRAINT --

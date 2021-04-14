@@ -1,24 +1,48 @@
 import { CreateUserUseCase } from '../../src/domain/CreateUserUseCase'
-import { FindUserByEmail, UserResultFound } from '../../src/domain/FindUserByEmailRepository'
+import { FindUserByEmailRepository, UserResultFound } from '../../src/domain/FindUserByEmailRepository'
+import { HashCreater } from '../../src/domain/HasherProtocol'
+import { InsertUserRepository, Params, Result } from '../../src/domain/InsertUserRepository'
 
 import { makeSut as userMock } from './mocks/user-mock'
 
 const makeSut = () => {
-  class UserRepository implements FindUserByEmail {
+  const hashedPassword = 'hashed_password'
+  const userCreated = {
+    id: 1,
+    name: 'any_name',
+    email: 'any_email',
+    password: hashedPassword
+  }
+  class UserRepository
+  implements FindUserByEmailRepository, InsertUserRepository {
+    async insert (params: Params): Promise<Result> {
+      return userCreated
+    }
+
     async findByEmail (email: string): Promise<UserResultFound> {
       return null
     }
   }
+  class HashCreaterSpy implements HashCreater {
+    hash (plainText: string): string {
+      return hashedPassword
+    }
+  }
   const { sut: userModelSpy } = userMock()
-  const findUserByEmailSpy = new UserRepository()
+  const userRepositorySpy = new UserRepository()
+  const hashSpy = new HashCreaterSpy()
   const sut = new CreateUserUseCase(
     userModelSpy,
-    findUserByEmailSpy
+    userRepositorySpy,
+    hashSpy
   )
   return {
     sut,
     userModelSpy,
-    findUserByEmailSpy
+    userRepositorySpy,
+    hashSpy,
+    hashedPassword,
+    userCreated
   }
 }
 
@@ -54,8 +78,8 @@ describe('CreateUserUseCase', () => {
   })
 
   test('should call FindUserByEmailRepository', async () => {
-    const { sut, findUserByEmailSpy } = makeSut()
-    const findByEmailSpy = jest.spyOn(findUserByEmailSpy, 'findByEmail')
+    const { sut, userRepositorySpy } = makeSut()
+    const findByEmailSpy = jest.spyOn(userRepositorySpy, 'findByEmail')
     const user = {
       name: 'any_name',
       email: 'any_email',
@@ -67,14 +91,14 @@ describe('CreateUserUseCase', () => {
   })
 
   test('should throw if email exists ', () => {
-    const { sut, findUserByEmailSpy } = makeSut()
+    const { sut, userRepositorySpy } = makeSut()
     const userFound = {
-      id: '!@#$1234',
+      id: 1,
       name: 'any_name',
       email: 'any_email',
       password: '123456'
     }
-    jest.spyOn(findUserByEmailSpy, 'findByEmail')
+    jest.spyOn(userRepositorySpy, 'findByEmail')
       .mockReturnValueOnce(Promise.resolve(userFound))
     const user = {
       name: 'any_name',
@@ -87,23 +111,76 @@ describe('CreateUserUseCase', () => {
       .toThrow(new Error('Email exists.'))
   })
 
-  // test.skip('should return a user created', async () => {
-  //   const { sut } = makeSut()
-  //   const user = {
-  //     name: 'any_name',
-  //     email: 'any_email',
-  //     password: '123456',
-  //     passwordConfirmation: '123456'
-  //   }
-  //   const userCreated = await sut.create(user)
-  //   const { id, ...restUser } = userCreated
-  //   expect(typeof id).toEqual('string')
-  //   expect(id.length).toBeGreaterThan(0)
-  //   expect(restUser).toEqual({
-  //     name: 'any_name',
-  //     email: 'any_email',
-  //     password: Array(61).fill('a').join(''),
-  //     passwordConfirmation: '123456'
-  //   })
-  // })
+  test('should call hash with plain password', async () => {
+    const { sut, hashSpy: hash } = makeSut()
+    const hashSpy = jest.spyOn(hash, 'hash')
+    const user = {
+      name: 'any_name',
+      email: 'any_email',
+      password: '123456',
+      passwordConfirmation: '123456'
+    }
+    await sut.create(user)
+    expect(hashSpy).toHaveBeenCalledWith(user.password)
+  })
+
+  test('should throw if hash password throws', async () => {
+    const { sut, hashSpy } = makeSut()
+    jest.spyOn(hashSpy, 'hash').mockImplementationOnce(() => {
+      throw new Error('any_error')
+    })
+    const user = {
+      name: 'any_name',
+      email: 'any_email',
+      password: '123456',
+      passwordConfirmation: '123456'
+    }
+    const promise = sut.create(user)
+    expect(promise).rejects.toThrowError(new Error('any_error'))
+  })
+
+  test('should call InsertUsertRepository with correct params', async () => {
+    const { sut, userRepositorySpy, hashedPassword } = makeSut()
+    const insertSpy = jest.spyOn(userRepositorySpy, 'insert')
+    const userParams = {
+      name: 'any_name',
+      email: 'any_email',
+      password: '123456',
+      passwordConfirmation: '123456'
+    }
+    const paramInsert = {
+      name: 'any_name',
+      email: 'any_email',
+      password: hashedPassword
+    }
+    await sut.create(userParams)
+    expect(insertSpy).toHaveBeenCalledWith(paramInsert)
+  })
+
+  test('should throw if InsertUsertRepository throws', () => {
+    const { sut, userRepositorySpy } = makeSut()
+    jest.spyOn(userRepositorySpy, 'insert').mockImplementationOnce(() => {
+      throw new Error('any_error')
+    })
+    const userParams = {
+      name: 'any_name',
+      email: 'any_email',
+      password: '123456',
+      passwordConfirmation: '123456'
+    }
+    const promise = sut.create(userParams)
+    expect(promise).rejects.toThrowError(new Error('any_error'))
+  })
+
+  test('should return an user if InsertUsertRepository ok', async () => {
+    const { sut, userCreated } = makeSut()
+    const userParams = {
+      name: 'any_name',
+      email: 'any_email',
+      password: '123456',
+      passwordConfirmation: '123456'
+    }
+    const user = await sut.create(userParams)
+    expect(user).toEqual(userCreated)
+  })
 })

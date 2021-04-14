@@ -1,10 +1,10 @@
 export type UserResultFound = Readonly<{
-  id: string
+  id: number
   name: string,
   email: string,
   password: string
 }>
 
-export interface FindUserByEmail {
+export interface FindUserByEmailRepository {
   findByEmail(email: string): Promise<UserResultFound>
 }

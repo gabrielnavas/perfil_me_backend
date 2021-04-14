@@ -1,6 +1,7 @@
+import { CreateUserValidProtocol } from './CreateUserValidProtocol'
 import { IsEmailProtocol } from './IsEmailProtocol'
 
-export type UserParams = {
+type UserParams = {
   name: string,
   email: string,
   password: string,
@@ -8,10 +9,6 @@ export type UserParams = {
 }
 
 export type UserValid = Readonly<Omit<UserParams, 'passwordConfirmation'>>
-
-export interface CreateUserValidProtocol {
-  create(user: UserParams): UserValid
-}
 
 export class UserModel implements CreateUserValidProtocol {
   constructor (
