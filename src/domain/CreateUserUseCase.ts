@@ -1,6 +1,6 @@
-import { FindUserByEmailRepository } from './FindUserByEmailRepository'
+import { FindUserByEmailRepositoryProtocol } from './FindUserByEmailRepositoryProtocol'
 import { HashCreater } from './HasherProtocol'
-import { InsertUserRepository } from './InsertUserRepository'
+import { InsertUserRepositoryProtocol } from './InsertUserRepositoryProtocol'
 import { UserModel } from './UserModel'
 
 type UserParams = {
@@ -20,7 +20,7 @@ type Result = Readonly<{
 export class CreateUserUseCase {
   constructor (
     private readonly user: UserModel,
-    private readonly userRepository: FindUserByEmailRepository & InsertUserRepository,
+    private readonly userRepository: FindUserByEmailRepositoryProtocol & InsertUserRepositoryProtocol,
     private readonly hashPassword: HashCreater
   ) {}
 

@@ -8,6 +8,6 @@ export type Result = Params & {
   id: number
 }
 
-export interface InsertUserRepository {
+export interface InsertUserRepositoryProtocol {
   insert(params: Params): Promise<Result>
 }

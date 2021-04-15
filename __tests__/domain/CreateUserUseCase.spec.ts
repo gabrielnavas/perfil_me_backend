@@ -1,7 +1,14 @@
 import { CreateUserUseCase } from '../../src/domain/CreateUserUseCase'
-import { FindUserByEmailRepository, UserResultFound } from '../../src/domain/FindUserByEmailRepository'
+import {
+  FindUserByEmailRepositoryProtocol,
+  UserResultFound
+} from '../../src/domain/FindUserByEmailRepositoryProtocol'
 import { HashCreater } from '../../src/domain/HasherProtocol'
-import { InsertUserRepository, Params, Result } from '../../src/domain/InsertUserRepository'
+import {
+  InsertUserRepositoryProtocol,
+  Params,
+  Result
+} from '../../src/domain/InsertUserRepositoryProtocol'
 
 import { makeSut as userMock } from './mocks/user-mock'
 
@@ -14,7 +21,7 @@ const makeSut = () => {
     password: hashedPassword
   }
   class UserRepository
-  implements FindUserByEmailRepository, InsertUserRepository {
+  implements FindUserByEmailRepositoryProtocol, InsertUserRepositoryProtocol {
     async insert (params: Params): Promise<Result> {
       return userCreated
     }
