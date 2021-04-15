@@ -1,5 +1,5 @@
-import { IsEmailProtocol } from '../../../src/domain/IsEmailProtocol'
-import { UserModel } from '../../../src/domain/UserModel'
+import { IsEmailProtocol } from '../../../src/domain/CreateUser/protocols/IsEmailProtocol'
+import { UserModel } from '../../../src/domain/CreateUser/models/UserModel'
 
 type MakeSutResult = {
   sut: UserModel

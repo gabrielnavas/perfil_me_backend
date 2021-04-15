@@ -1,5 +1,5 @@
-import { CreateUserValidProtocol } from './CreateUserValidProtocol'
-import { IsEmailProtocol } from './IsEmailProtocol'
+import { CreateUserValidProtocol } from '../protocols/CreateUserValidProtocol'
+import { IsEmailProtocol } from '../protocols/IsEmailProtocol'
 
 type UserParams = {
   name: string,

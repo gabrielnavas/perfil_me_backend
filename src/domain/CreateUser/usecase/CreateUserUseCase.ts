@@ -1,6 +1,6 @@
-import { FindUserByEmailRepositoryProtocol } from './FindUserByEmailRepositoryProtocol'
-import { HashCreater } from './HasherProtocol'
-import { InsertUserRepositoryProtocol } from './InsertUserRepositoryProtocol'
+import { FindUserByEmailRepositoryProtocol } from './protocols/FindUserByEmailRepositoryProtocol'
+import { HashCreater } from './protocols/HasherProtocol'
+import { InsertUserRepositoryProtocol } from './protocols/InsertUserRepositoryProtocol'
 import { UserModel } from './UserModel'
 
 type UserParams = {

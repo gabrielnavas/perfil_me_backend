@@ -1,14 +1,14 @@
-import { CreateUserUseCase } from '../../src/domain/CreateUserUseCase'
+import { CreateUserUseCase } from '../../src/domain/CreateUser/usecase/CreateUserUseCase'
 import {
   FindUserByEmailRepositoryProtocol,
   UserResultFound
-} from '../../src/domain/FindUserByEmailRepositoryProtocol'
-import { HashCreater } from '../../src/domain/HasherProtocol'
+} from '../../src/domain/CreateUser/protocols/FindUserByEmailRepositoryProtocol'
+import { HashCreater } from '../../src/domain/CreateUser/protocols/HasherProtocol'
 import {
   InsertUserRepositoryProtocol,
   Params,
   Result
-} from '../../src/domain/InsertUserRepositoryProtocol'
+} from '../../src/domain/CreateUser/protocols/InsertUserRepositoryProtocol'
 
 import { makeSut as userMock } from './mocks/user-mock'
 
